@@ -1,0 +1,7 @@
+{
+  "name": "telegram-digest",
+  "version": "1.0.0",
+  "description": "Telegram Channel Digest plugin for OpenClaw",
+  "main": "index.ts",
+  "private": true
+}

@@ -1,0 +1,7 @@
+{
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "Task management plugin with priorities, deadlines, and recurring tasks",
+  "main": "index.ts",
+  "private": true
+}

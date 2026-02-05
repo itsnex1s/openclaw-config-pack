@@ -1,0 +1,46 @@
+[Unit]
+Description=OpenClaw AI Gateway
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=YOUR_USER
+Group=YOUR_USER
+# Set this to where you cloned the OpenClaw source code
+WorkingDirectory=%h/openclaw
+
+# Security hardening
+NoNewPrivileges=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=4096
+MemoryMax=2G
+CPUQuota=80%
+
+# Environment
+EnvironmentFile=%h/.openclaw/credentials/.env
+
+# Start gateway (1.5G heap)
+ExecStart=/usr/bin/node --max-old-space-size=1536 dist/index.js gateway --bind loopback --port 18789
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=append:%h/.openclaw/logs/gateway.log
+StandardError=append:%h/.openclaw/logs/gateway.log
+SyslogIdentifier=openclaw
+
+[Install]
+WantedBy=multi-user.target

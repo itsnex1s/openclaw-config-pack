@@ -1,0 +1,190 @@
+# ============================================================
+# OpenClaw - Maximum Security Configuration
+# Hardened Docker deployment with read-only FS, dropped caps, resource limits
+# ============================================================
+
+services:
+  # ============================================================
+  # OpenClaw Gateway - Hardened
+  # ============================================================
+  openclaw-gateway:
+    image: openclaw/openclaw:latest
+    container_name: openclaw-secure
+
+    # === SECURITY HARDENING ===
+    security_opt:
+      - no-new-privileges:true
+      # For additional protection you can enable seccomp
+      # - seccomp:./seccomp-profile.json
+
+    # Read-only root filesystem
+    read_only: true
+
+    # Drop ALL capabilities
+    cap_drop:
+      - ALL
+
+    # Process limit (fork bomb protection)
+    pids_limit: 64
+
+    # Run as nobody (minimal privileges)
+    user: "65534:65534"
+
+    # === TEMPORARY FILESYSTEMS ===
+    tmpfs:
+      - /tmp:size=64m,mode=1777,noexec
+      - /var/tmp:size=32m,mode=1777,noexec
+      - /run:size=32m,mode=755
+
+    # === ENVIRONMENT ===
+    env_file:
+      - ${OPENCLAW_HOME:-${HOME}/.openclaw}/credentials/.env
+    environment:
+      HOME: /app
+      NODE_ENV: production
+      # Disable debugging
+      DEBUG: ""
+      NODE_DEBUG: ""
+
+    # === VOLUMES - ONLY WHAT'S NECESSARY ===
+    volumes:
+      # Workspace - ONLY writable location
+      - ${OPENCLAW_HOME:-${HOME}/.openclaw}/workspace:/app/workspace:rw
+
+      # Configuration - READ ONLY
+      - ${OPENCLAW_HOME:-${HOME}/.openclaw}/config/openclaw.json:/app/config/openclaw.json:ro
+
+      # Credentials - READ ONLY (keep in Linux FS for chmod 600!)
+      - ${OPENCLAW_HOME:-${HOME}/.openclaw}/credentials/.env:/app/.env:ro
+
+      # Logs - isolated write
+      - ${OPENCLAW_HOME:-${HOME}/.openclaw}/logs:/app/logs:rw
+
+      # !!! DO NOT mount docker.sock - dangerous !!!
+      # !!! DO NOT mount /mnt/c/ - slow and insecure !!!
+
+    # === NETWORK ===
+    # Localhost only, no external access
+    ports:
+      - "127.0.0.1:18789:18789"
+
+    # === RESOURCE LIMITS ===
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+          pids: 64
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+    # === HEALTH CHECK ===
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    restart: unless-stopped
+
+    # WSL2: host access
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    command: >
+      node dist/index.js gateway
+      --bind loopback
+      --port 18789
+
+  # ============================================================
+  # Sandbox Container - Maximum Isolation
+  # ============================================================
+  openclaw-sandbox:
+    image: openclaw-sandbox:bookworm-slim
+    container_name: openclaw-sandbox
+
+    # FULL NETWORK ISOLATION
+    network_mode: "none"
+
+    # Security hardening
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
+
+    # Minimal resources
+    pids_limit: 32
+    user: "65534:65534"
+
+    # Only /tmp for temporary files
+    tmpfs:
+      - /tmp:size=32m,mode=1777,noexec
+
+    # Isolated filesystem
+    volumes:
+      # Only workspace, read-only!
+      - ${OPENCLAW_HOME:-${HOME}/.openclaw}/workspace:/workspace:ro
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+          pids: 32
+
+    # Sandbox is not started directly, called by gateway
+    profiles:
+      - sandbox
+
+  # ============================================================
+  # Cloudflare Tunnel - Zero Trust Access
+  # ============================================================
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+
+    # Minimal privileges
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+
+    tmpfs:
+      - /tmp:size=16m
+
+    command: tunnel --config /etc/cloudflared/config.yml run
+
+    volumes:
+      - ${OPENCLAW_HOME:-${HOME}/.openclaw}/cloudflared:/etc/cloudflared:ro
+
+    depends_on:
+      openclaw-gateway:
+        condition: service_healthy
+
+    # Host network for tunnel
+    network_mode: "host"
+
+    restart: unless-stopped
+
+    # Optional - uncomment to enable
+    profiles:
+      - tunnel
+
+# ============================================================
+# Networks - isolated network
+# ============================================================
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"
+
+# ============================================================
+# NOTE: No named volumes used
+# All data in ./workspace, ./logs, ./credentials
+# This allows controlling access with file permissions
+# ============================================================

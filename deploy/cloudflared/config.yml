@@ -1,0 +1,25 @@
+# Cloudflare Tunnel Configuration for OpenClaw
+# Replace YOUR_TUNNEL_ID with your actual tunnel ID
+
+tunnel: YOUR_TUNNEL_ID
+credentials-file: /etc/cloudflared/YOUR_TUNNEL_ID.json
+
+ingress:
+  # OpenClaw Gateway WebSocket + HTTP
+  - hostname: openclaw.yourdomain.com
+    service: http://127.0.0.1:18789
+    originRequest:
+      httpHostHeader: "openclaw.yourdomain.com"
+      connectTimeout: 30s
+      tcpKeepAlive: 30s
+      noTLSVerify: false
+
+  # Catch-all rule (must be last)
+  - service: http_status:404
+
+# Global settings
+originRequest:
+  connectTimeout: 30s
+  tcpKeepAlive: 30s
+  keepAliveConnections: 100
+  keepAliveTimeout: 90s

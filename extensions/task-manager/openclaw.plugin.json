@@ -1,0 +1,12 @@
+{
+  "id": "task-manager",
+  "name": "Task Manager",
+  "version": "1.0.0",
+  "description": "Task management plugin for the Tasks topic — handles done/status/today/overdue/priority commands",
+  "entry": "index.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  }
+}

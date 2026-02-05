@@ -1,0 +1,7 @@
+{
+  "name": "voice-transcriber",
+  "version": "1.0.0",
+  "description": "Voice transcription plugin for OpenClaw using local whisper.cpp with GPU acceleration",
+  "main": "index.ts",
+  "private": true
+}

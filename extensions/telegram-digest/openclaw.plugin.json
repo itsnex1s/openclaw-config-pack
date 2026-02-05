@@ -1,0 +1,12 @@
+{
+  "id": "telegram-digest",
+  "name": "Telegram Channel Digest",
+  "version": "1.0.0",
+  "description": "Daily digest from subscribed Telegram channels via Telethon + Gemini",
+  "entry": "index.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "voice-transcriber",
+  "name": "Voice Transcriber",
+  "version": "1.0.0",
+  "description": "Automatic voice message transcription using local whisper.cpp with GPU acceleration",
+  "entry": "index.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "voiceTopicId": {
+        "type": "string",
+        "default": "7",
+        "description": "Topic ID for Voice channel (transcripts saved to file)"
+      },
+      "transcriptsPath": {
+        "type": "string",
+        "default": "topics/voice/transcripts",
+        "description": "Workspace-relative path for transcript files"
+      },
+      "language": {
+        "type": "string",
+        "default": "en",
+        "description": "Default language for transcription (en, ru, de, etc.)"
+      }
+    },
+    "additionalProperties": false
+  }
+}

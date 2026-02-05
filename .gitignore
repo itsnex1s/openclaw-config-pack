@@ -1,0 +1,56 @@
+# Credentials and secrets
+.env
+*.env
+!.env.example
+!*.env.example
+
+# Cloudflare credentials
+cloudflared/*.json
+cloudflared/cert.pem
+cloudflared/*.pem
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (if any)
+node_modules/
+
+# Docker volumes
+data/
+volumes/
+
+# Backup files
+*.backup
+*-backup-*
+
+# Telethon session
+*.session
+*.session-journal
+
+# Python venv
+scripts/digest-venv/
+__pycache__/
+*.pyc
+
+# Runtime data (not part of the config pack)
+workspace/MEMORY.md
+workspace/memory/
+workspace/topics/
+workspace/shared/
