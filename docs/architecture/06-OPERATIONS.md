@@ -4,7 +4,7 @@
 
 ```
 1. Stop gateway         sudo systemctl stop openclaw
-2. Backup               ~/.openclaw/scripts/backup.sh
+2. Backup               ~/.openclaw/scripts/maintenance/backup.sh
 3. Fetch updates        cd ~/openclaw && git fetch --tags
 4. Compare versions     CURRENT=$(git describe --tags)
                         LATEST=$(git tag --sort=-v:refname | head -1)
@@ -22,7 +22,7 @@
 **Backup** (GPG AES-256, runs Sunday 03:00):
 
 ```bash
-~/.openclaw/scripts/backup.sh
+~/.openclaw/scripts/maintenance/backup.sh
 # Creates: ~/.openclaw/backups/openclaw-backup-YYYYMMDD-HHMMSS.tar.gz.gpg
 # Passphrase: ~/.openclaw/credentials/backup-passphrase
 # Rotation: 30 days

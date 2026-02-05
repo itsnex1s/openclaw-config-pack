@@ -77,7 +77,7 @@ sh ./models/download-ggml-model.sh large-v3-turbo
 
 ```bash
 # Record or use any audio file
-~/.openclaw/scripts/transcribe.sh /path/to/audio.ogg en
+~/.openclaw/scripts/tools/transcribe.sh /path/to/audio.ogg en
 
 # Or test whisper directly
 ~/whisper.cpp/build/bin/whisper-cli \
@@ -93,8 +93,8 @@ The installer copies the plugin automatically if you choose to install extension
 cp -r extensions/voice-transcriber \
   ~/.openclaw/workspace/.openclaw/extensions/
 
-cp scripts/transcribe.sh ~/.openclaw/scripts/
-chmod +x ~/.openclaw/scripts/transcribe.sh
+cp scripts/tools/transcribe.sh ~/.openclaw/scripts/tools/
+chmod +x ~/.openclaw/scripts/tools/transcribe.sh
 ```
 
 ### 6. Enable in config
@@ -220,8 +220,8 @@ The plugin registers a `transcribe_audio` tool the agent can call:
 
 ```bash
 # Verify transcribe.sh exists and is executable
-ls -la ~/.openclaw/scripts/transcribe.sh
-chmod +x ~/.openclaw/scripts/transcribe.sh
+ls -la ~/.openclaw/scripts/tools/transcribe.sh
+chmod +x ~/.openclaw/scripts/tools/transcribe.sh
 ```
 
 ### CUDA not found
@@ -279,7 +279,7 @@ echo 'WHISPER_MODEL=$HOME/whisper.cpp/models/ggml-base.bin' >> ~/.openclaw/crede
 1. Check plugin loaded: `grep "voice-transcriber" /tmp/gw.log`
 2. Check for errors: `grep -i "error" /tmp/gw.log | grep voice`
 3. Verify bot token is set: `echo $TELEGRAM_BOT_TOKEN`
-4. Test manually: `~/.openclaw/scripts/transcribe.sh test.ogg en`
+4. Test manually: `~/.openclaw/scripts/tools/transcribe.sh test.ogg en`
 
 ---
 
@@ -293,7 +293,8 @@ echo 'WHISPER_MODEL=$HOME/whisper.cpp/models/ggml-base.bin' >> ~/.openclaw/crede
 
 ~/.openclaw/
 ├── scripts/
-│   └── transcribe.sh                  # Wrapper script
+│   └── tools/
+│       └── transcribe.sh              # Wrapper script
 └── workspace/
     ├── .openclaw/extensions/voice-transcriber/
     │   ├── index.ts                   # Plugin code

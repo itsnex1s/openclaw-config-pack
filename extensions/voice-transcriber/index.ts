@@ -5,7 +5,7 @@
  * Requirements:
  *   - whisper.cpp built with CUDA (or CPU)
  *   - ffmpeg (for OGG -> WAV conversion)
- *   - ~/.openclaw/scripts/transcribe.sh
+ *   - ~/.openclaw/scripts/tools/transcribe.sh
  *
  * See docs/VOICE-TRANSCRIPTION.md for setup instructions.
  */
@@ -45,7 +45,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 const OPENCLAW_HOME = process.env.OPENCLAW_HOME || path.join(process.env.HOME || "", ".openclaw");
-const TRANSCRIBE_SCRIPT = path.join(OPENCLAW_HOME, "scripts", "transcribe.sh");
+const TRANSCRIBE_SCRIPT = path.join(OPENCLAW_HOME, "scripts", "tools", "transcribe.sh");
 
 function parseOutput(output: string): { text: string } | TranscriptionError {
   const trimmed = output.trim();

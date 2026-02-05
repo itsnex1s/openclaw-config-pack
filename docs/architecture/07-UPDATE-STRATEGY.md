@@ -122,7 +122,7 @@ flowchart TD
 [ ] Check Plugin API version — look for PluginHookName changes in types.d.ts
 [ ] Check if event names changed (message_received, etc.)
 [ ] Search for deprecation warnings in current logs
-[ ] Run backup: ~/.openclaw/scripts/backup.sh
+[ ] Run backup: ~/.openclaw/scripts/maintenance/backup.sh
 [ ] Note current version: cd ~/openclaw && git describe --tags
 [ ] Verify fallback model IDs still valid on OpenRouter
 ```
@@ -218,11 +218,10 @@ tmux send-keys -t gw 'cd ~/openclaw && set -a && . ~/.openclaw/credentials/.env 
 │           ├── task-manager/
 │           └── voice-transcriber/
 ├── scripts/                       ← Custom scripts
-│   ├── daily-digest.sh
-│   ├── security-monitor.sh
-│   ├── telegram-digest.py
-│   ├── digest-channels.json
-│   └── digest-venv/
+│   ├── digest/                   ← Channel digest scripts + config
+│   ├── notify/                   ← Notification scripts
+│   ├── maintenance/              ← System maintenance scripts
+│   └── tools/                    ← Standalone utilities
 ├── backups/                       ← Encrypted backups
 └── logs/                          ← Logs
 

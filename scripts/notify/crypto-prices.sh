@@ -6,7 +6,7 @@
 #   ./crypto-prices.sh --preview    # Preview without sending
 #
 # Cron:
-#   0 10 * * * ~/.openclaw/scripts/crypto-prices.sh >> ~/.openclaw/logs/crypto-prices.log 2>&1
+#   0 10 * * * ~/.openclaw/scripts/notify/crypto-prices.sh >> ~/.openclaw/logs/crypto-prices.log 2>&1
 #
 # Required env vars:
 #   TELEGRAM_BOT_TOKEN, TELEGRAM_GROUP_ID

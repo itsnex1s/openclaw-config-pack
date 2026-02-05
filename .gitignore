@@ -45,7 +45,7 @@ volumes/
 *.session-journal
 
 # Python venv
-scripts/digest-venv/
+scripts/digest/venv/
 __pycache__/
 *.pyc
 

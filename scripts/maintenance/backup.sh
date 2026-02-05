@@ -8,7 +8,7 @@
 #   BACKUP_PASSPHRASE=xxx ./backup.sh  — non-interactive (for cron)
 #
 # Cron example (Sunday 03:00):
-#   0 3 * * 0 BACKUP_PASSPHRASE="your-passphrase" ~/.openclaw/scripts/backup.sh >> ~/.openclaw/logs/backup.log 2>&1
+#   0 3 * * 0 BACKUP_PASSPHRASE="your-passphrase" ~/.openclaw/scripts/maintenance/backup.sh >> ~/.openclaw/logs/backup.log 2>&1
 
 set -euo pipefail
 

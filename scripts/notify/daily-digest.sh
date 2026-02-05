@@ -8,9 +8,9 @@
 #   ./daily-digest.sh --weekly     # Weekly review
 #
 # Cron:
-#   0 8 * * * ~/.openclaw/scripts/daily-digest.sh
-#   0 20 * * * ~/.openclaw/scripts/daily-digest.sh --evening
-#   0 10 * * 0 ~/.openclaw/scripts/daily-digest.sh --weekly
+#   0 8 * * * ~/.openclaw/scripts/notify/daily-digest.sh
+#   0 20 * * * ~/.openclaw/scripts/notify/daily-digest.sh --evening
+#   0 10 * * 0 ~/.openclaw/scripts/notify/daily-digest.sh --weekly
 #
 # Required env vars:
 #   TELEGRAM_BOT_TOKEN, TELEGRAM_GROUP_ID, TELEGRAM_TOPIC_DAILY

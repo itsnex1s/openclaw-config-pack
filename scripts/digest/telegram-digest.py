@@ -10,7 +10,7 @@ Usage:
 
 Prerequisites:
     pip install telethon google-generativeai
-    (or use requirements-digest.txt)
+    (or use requirements.txt in scripts/digest/)
 
 See docs/TELEGRAM-DIGEST.md for full setup instructions.
 """
@@ -41,11 +41,11 @@ import google.generativeai as genai
 
 OPENCLAW_HOME = Path(os.environ.get("OPENCLAW_HOME", Path.home() / ".openclaw"))
 CREDENTIALS_DIR = OPENCLAW_HOME / "credentials"
-SCRIPTS_DIR = OPENCLAW_HOME / "scripts"
+DIGEST_DIR = OPENCLAW_HOME / "scripts" / "digest"
 LOGS_DIR = OPENCLAW_HOME / "logs"
 
 SESSION_FILE = str(CREDENTIALS_DIR / "telethon")
-CHANNELS_CONFIG = SCRIPTS_DIR / "digest-channels.json"
+CHANNELS_CONFIG = DIGEST_DIR / "channels.json"
 
 # Env vars
 API_ID = int(os.environ.get("TELEGRAM_API_ID", "0"))
@@ -383,7 +383,7 @@ async def run_digest(dry_run: bool = False):
     config = load_config()
     channels = config.get("channels", [])
     if not channels:
-        log.error("No channels configured in digest-channels.json")
+        log.error("No channels configured in channels.json")
         sys.exit(1)
 
     log.info(f"Starting digest: {len(channels)} channels, dry_run={dry_run}")

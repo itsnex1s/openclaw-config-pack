@@ -222,27 +222,30 @@ Paste:
 
 ```cron
 # Daily digest (morning + evening)
-0 8 * * * ~/.openclaw/scripts/daily-digest.sh >> ~/.openclaw/logs/daily-digest.log 2>&1
-0 20 * * * ~/.openclaw/scripts/daily-digest.sh --evening >> ~/.openclaw/logs/daily-digest.log 2>&1
+0 8 * * * ~/.openclaw/scripts/notify/daily-digest.sh >> ~/.openclaw/logs/daily-digest.log 2>&1
+0 20 * * * ~/.openclaw/scripts/notify/daily-digest.sh --evening >> ~/.openclaw/logs/daily-digest.log 2>&1
 
 # Task ping
-0 10 * * * ~/.openclaw/scripts/task-ping.sh >> ~/.openclaw/logs/task-ping.log 2>&1
-0 18 * * * ~/.openclaw/scripts/task-ping.sh >> ~/.openclaw/logs/task-ping.log 2>&1
+0 10 * * * ~/.openclaw/scripts/notify/task-ping.sh >> ~/.openclaw/logs/task-ping.log 2>&1
+0 18 * * * ~/.openclaw/scripts/notify/task-ping.sh >> ~/.openclaw/logs/task-ping.log 2>&1
 
 # Security monitor (every 15 min)
-*/15 * * * * ~/.openclaw/scripts/security-monitor.sh >> ~/.openclaw/logs/security-monitor.log 2>&1
+*/15 * * * * ~/.openclaw/scripts/maintenance/security-monitor.sh >> ~/.openclaw/logs/security-monitor.log 2>&1
 
 # Log cleanup + leak detection (daily 03:00)
-0 3 * * * ~/.openclaw/scripts/clean-logs.sh >> ~/.openclaw/logs/clean-logs.log 2>&1
+0 3 * * * ~/.openclaw/scripts/maintenance/clean-logs.sh >> ~/.openclaw/logs/clean-logs.log 2>&1
 
 # Encrypted backup (Sunday 03:30)
-30 3 * * 0 BACKUP_PASSPHRASE="CHANGE_ME" ~/.openclaw/scripts/backup.sh >> ~/.openclaw/logs/backup.log 2>&1
+30 3 * * 0 BACKUP_PASSPHRASE="CHANGE_ME" ~/.openclaw/scripts/maintenance/backup.sh >> ~/.openclaw/logs/backup.log 2>&1
 
 # Crypto & NFT prices (daily 10:00)
-0 10 * * * ~/.openclaw/scripts/crypto-prices.sh >> ~/.openclaw/logs/crypto-prices.log 2>&1
+0 10 * * * ~/.openclaw/scripts/notify/crypto-prices.sh >> ~/.openclaw/logs/crypto-prices.log 2>&1
 
-# Channel digest (daily 08:30, optional)
-# 30 8 * * * ~/.openclaw/scripts/telegram-digest-cron.sh >> ~/.openclaw/logs/telegram-digest.log 2>&1
+# Channel digest — Telethon (daily 08:30, optional)
+# 30 8 * * * ~/.openclaw/scripts/digest/telegram-digest-cron.sh >> ~/.openclaw/logs/telegram-digest.log 2>&1
+
+# Channel digest — public scraping (daily 08:45, optional)
+# 45 8 * * * ~/.openclaw/scripts/digest/telegram-digest-public-cron.sh >> ~/.openclaw/logs/telegram-digest-public.log 2>&1
 ```
 
 **Note:** Cron jobs survive WSL2 restarts as long as systemd is enabled. If you run `wsl --shutdown` from Windows, cron resumes automatically on next WSL2 start.
@@ -420,5 +423,5 @@ wsl --shutdown
 | Restart WSL2 | PowerShell: `wsl --shutdown` |
 | Check open ports | `ss -tlnp` |
 | Firewall status | `sudo ufw status` |
-| Run digest preview | `~/.openclaw/scripts/daily-digest.sh --preview` |
-| Backup now | `BACKUP_PASSPHRASE="..." ~/.openclaw/scripts/backup.sh` |
+| Run digest preview | `~/.openclaw/scripts/notify/daily-digest.sh --preview` |
+| Backup now | `BACKUP_PASSPHRASE="..." ~/.openclaw/scripts/maintenance/backup.sh` |

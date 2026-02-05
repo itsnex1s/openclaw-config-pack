@@ -315,14 +315,14 @@ After rotating any credential, restart the gateway for the change to take effect
 
 ### Encrypted Backups
 
-The `scripts/backup.sh` script creates GPG AES-256 encrypted backups:
+The `scripts/maintenance/backup.sh` script creates GPG AES-256 encrypted backups:
 
 ```bash
 # Interactive (prompts for passphrase)
-~/.openclaw/scripts/backup.sh
+~/.openclaw/scripts/maintenance/backup.sh
 
 # Non-interactive (for cron)
-BACKUP_PASSPHRASE="your-passphrase" ~/.openclaw/scripts/backup.sh
+BACKUP_PASSPHRASE="your-passphrase" ~/.openclaw/scripts/maintenance/backup.sh
 ```
 
 **What is backed up:**
@@ -336,7 +336,7 @@ BACKUP_PASSPHRASE="your-passphrase" ~/.openclaw/scripts/backup.sh
 
 ```bash
 # Add to crontab
-0 3 * * 0 BACKUP_PASSPHRASE="your-passphrase" ~/.openclaw/scripts/backup.sh >> ~/.openclaw/logs/backup.log 2>&1
+0 3 * * 0 BACKUP_PASSPHRASE="your-passphrase" ~/.openclaw/scripts/maintenance/backup.sh >> ~/.openclaw/logs/backup.log 2>&1
 ```
 
 ### Restore
@@ -360,7 +360,7 @@ gpg --batch --passphrase-file ~/.openclaw/credentials/backup-passphrase \
 
 ### Automated Security Monitor
 
-The `scripts/security-monitor.sh` script runs every 15 minutes via cron and monitors:
+The `scripts/maintenance/security-monitor.sh` script runs every 15 minutes via cron and monitors:
 
 **Critical alerts (sent immediately to Telegram):**
 - Authentication failures
@@ -374,22 +374,22 @@ The `scripts/security-monitor.sh` script runs every 15 minutes via cron and moni
 
 ```bash
 # Cron setup
-*/15 * * * * ~/.openclaw/scripts/security-monitor.sh
-0 12 * * *   ~/.openclaw/scripts/security-monitor.sh --digest
+*/15 * * * * ~/.openclaw/scripts/maintenance/security-monitor.sh
+0 12 * * *   ~/.openclaw/scripts/maintenance/security-monitor.sh --digest
 ```
 
 ### Log Monitoring
 
-Gateway logs are stored in `~/.openclaw/logs/`. The `scripts/clean-logs.sh` script handles rotation and secret leak detection:
+Gateway logs are stored in `~/.openclaw/logs/`. The `scripts/maintenance/clean-logs.sh` script handles rotation and secret leak detection:
 
 ```bash
 # Daily log cleanup
-0 3 * * * ~/.openclaw/scripts/clean-logs.sh
+0 3 * * * ~/.openclaw/scripts/maintenance/clean-logs.sh
 ```
 
 ### Health Check
 
-The `scripts/daily-check.sh` script verifies:
+The `scripts/maintenance/daily-check.sh` script verifies:
 - Container/process status
 - Gateway health endpoint response
 - Resource usage (CPU, memory, disk)

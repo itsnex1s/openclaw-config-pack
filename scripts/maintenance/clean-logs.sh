@@ -1,6 +1,6 @@
 #!/bin/bash
 # clean-logs.sh - OpenClaw log and session cleanup
-# Run via cron: 0 3 * * * ~/.openclaw/scripts/clean-logs.sh
+# Run via cron: 0 3 * * * ~/.openclaw/scripts/maintenance/clean-logs.sh
 
 set -e
 

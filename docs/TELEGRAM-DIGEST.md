@@ -17,7 +17,7 @@ Cron (08:30) → telegram-digest.py (Telethon)
 Connects as userbot (MTProto, read-only)
     |
     v
-Reads channels from digest-channels.json (last 24h)
+Reads channels from channels.json (last 24h)
     |
     v
 Filters noise (stickers, voice, GIF, service msgs, short msgs)
@@ -82,10 +82,10 @@ DIGEST_TOPIC_ID=121
 ### 3. Create Python virtual environment
 
 ```bash
-cd ~/.openclaw/scripts
-python3 -m venv digest-venv
-source digest-venv/bin/activate
-pip install -r requirements-digest.txt
+cd ~/.openclaw/scripts/digest
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ### 4. Authenticate with Telegram
@@ -94,7 +94,7 @@ First run requires interactive login (phone number + code):
 
 ```bash
 source ~/.openclaw/credentials/.env
-python3 ~/.openclaw/scripts/telegram-digest.py --auth
+python3 ~/.openclaw/scripts/digest/telegram-digest.py --auth
 ```
 
 This creates `~/.openclaw/credentials/telethon.session`. The session is reused for all future runs.
@@ -105,7 +105,7 @@ chmod 600 ~/.openclaw/credentials/telethon.session
 
 ### 5. Configure channels
 
-Edit `~/.openclaw/scripts/digest-channels.json`:
+Edit `~/.openclaw/scripts/digest/channels.json`:
 
 ```json
 {
@@ -126,10 +126,10 @@ Channels can be specified as `@username` or numeric ID.
 
 ```bash
 # Preview without sending
-python3 ~/.openclaw/scripts/telegram-digest.py --dry-run
+python3 ~/.openclaw/scripts/digest/telegram-digest.py --dry-run
 
 # Full run
-python3 ~/.openclaw/scripts/telegram-digest.py
+python3 ~/.openclaw/scripts/digest/telegram-digest.py
 ```
 
 ### 7. Add cron job
@@ -141,7 +141,7 @@ crontab -e
 Add:
 
 ```
-30 8 * * * ~/.openclaw/scripts/telegram-digest-cron.sh
+30 8 * * * ~/.openclaw/scripts/digest/telegram-digest-cron.sh
 ```
 
 ---
@@ -160,7 +160,7 @@ WEATHER_CITY=London
 ### 2. Test
 
 ```bash
-~/.openclaw/scripts/daily-digest.sh --preview
+~/.openclaw/scripts/notify/daily-digest.sh --preview
 ```
 
 ### 3. Add cron jobs
@@ -173,20 +173,20 @@ Add:
 
 ```
 # Morning digest at 08:00
-0 8 * * * ~/.openclaw/scripts/daily-digest.sh >> ~/.openclaw/logs/daily-digest.log 2>&1
+0 8 * * * ~/.openclaw/scripts/notify/daily-digest.sh >> ~/.openclaw/logs/daily-digest.log 2>&1
 
 # Evening summary at 20:00
-0 20 * * * ~/.openclaw/scripts/daily-digest.sh --evening >> ~/.openclaw/logs/daily-digest.log 2>&1
+0 20 * * * ~/.openclaw/scripts/notify/daily-digest.sh --evening >> ~/.openclaw/logs/daily-digest.log 2>&1
 
 # Weekly review on Sundays at 10:00
-0 10 * * 0 ~/.openclaw/scripts/daily-digest.sh --weekly >> ~/.openclaw/logs/daily-digest.log 2>&1
+0 10 * * 0 ~/.openclaw/scripts/notify/daily-digest.sh --weekly >> ~/.openclaw/logs/daily-digest.log 2>&1
 ```
 
 ---
 
 ## Configuration
 
-### Channel Digest (`digest-channels.json`)
+### Channel Digest (`scripts/digest/channels.json`)
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -305,16 +305,23 @@ Shows:
 │   ├── .env                        # API keys, tokens
 │   └── telethon.session            # Telethon auth (chmod 600)
 ├── scripts/
-│   ├── telegram-digest.py          # Channel digest collector
-│   ├── telegram-digest-cron.sh     # Cron wrapper
-│   ├── daily-digest.sh             # Task digest (morning/evening/weekly)
-│   ├── digest-channels.json        # Channel list
-│   ├── requirements-digest.txt     # Python dependencies
-│   └── digest-venv/                # Python virtual environment
+│   ├── digest/
+│   │   ├── telegram-digest.py              # Channel digest (Telethon)
+│   │   ├── telegram-digest-public.py       # Channel digest (public scraping)
+│   │   ├── telegram-digest-cron.sh         # Cron wrapper (Telethon)
+│   │   ├── telegram-digest-public-cron.sh  # Cron wrapper (public)
+│   │   ├── channels.json                   # Telethon channel list
+│   │   ├── public-channels.json            # Public channel list
+│   │   ├── requirements.txt                # Telethon dependencies
+│   │   ├── requirements-public.txt         # Public scraping dependencies
+│   │   └── venv/                           # Shared Python virtual environment
+│   └── notify/
+│       └── daily-digest.sh                 # Task digest (morning/evening/weekly)
 ├── workspace/
 │   ├── topics/
 │   │   ├── channel-digest/
-│   │   │   └── YYYY-MM-DD.md      # Saved channel digests
+│   │   │   ├── YYYY-MM-DD.md          # Telethon digest
+│   │   │   └── YYYY-MM-DD-public.md   # Public digest
 │   │   ├── daily/
 │   │   │   └── YYYY-MM-DD.md      # Saved daily digests
 │   │   └── tasks/
@@ -339,14 +346,14 @@ Shows:
 grep TELEGRAM_API ~/.openclaw/credentials/.env
 
 # Make sure cron wrapper sources .env
-cat ~/.openclaw/scripts/telegram-digest-cron.sh
+cat ~/.openclaw/scripts/digest/telegram-digest-cron.sh
 ```
 
 ### "No channels configured"
 
 ```bash
 # Check config exists
-cat ~/.openclaw/scripts/digest-channels.json
+cat ~/.openclaw/scripts/digest/channels.json
 
 # Channels must be an array of strings/numbers
 ```
@@ -360,7 +367,7 @@ The userbot must be subscribed to the channel. Join the channel first, then retr
 ```bash
 # Re-authenticate
 source ~/.openclaw/credentials/.env
-python3 ~/.openclaw/scripts/telegram-digest.py --auth
+python3 ~/.openclaw/scripts/digest/telegram-digest.py --auth
 ```
 
 ### Gemini API errors
@@ -370,7 +377,7 @@ python3 ~/.openclaw/scripts/telegram-digest.py --auth
 echo $GOOGLE_API_KEY
 
 # Test with dry-run (still calls Gemini but doesn't send to Telegram)
-python3 ~/.openclaw/scripts/telegram-digest.py --dry-run
+python3 ~/.openclaw/scripts/digest/telegram-digest.py --dry-run
 ```
 
 ### Daily digest not showing tasks
@@ -380,8 +387,17 @@ python3 ~/.openclaw/scripts/telegram-digest.py --dry-run
 cat ~/.openclaw/workspace/topics/tasks/TODO.md
 
 # Preview digest
-~/.openclaw/scripts/daily-digest.sh --preview
+~/.openclaw/scripts/notify/daily-digest.sh --preview
 ```
+
+---
+
+## Public Channel Variant
+
+For public channels without authentication (no Telethon, no API ID/hash), see
+[TELEGRAM-DIGEST-PUBLIC.md](TELEGRAM-DIGEST-PUBLIC.md).
+
+The public variant uses HTTP scraping instead of MTProto — simpler setup, but limited to public channels with web preview enabled.
 
 ---
 

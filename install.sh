@@ -51,7 +51,7 @@ fi
 echo ""
 echo -e "${YELLOW}[1/7] Creating directory structure...${NC}"
 
-mkdir -p "$OPENCLAW_HOME"/{config,credentials,logs,workspace,scripts,cloudflared,backups}
+mkdir -p "$OPENCLAW_HOME"/{config,credentials,logs,workspace,scripts/{digest,notify,maintenance,tools},cloudflared,backups}
 mkdir -p "$OPENCLAW_HOME"/workspace/.openclaw/{skills,extensions}
 
 echo -e "${GREEN}  ✓ Directories created${NC}"
@@ -183,26 +183,41 @@ fi
 # ============================================================
 echo -e "${YELLOW}[5/7] Copying scripts...${NC}"
 
-for script in backup.sh clean-logs.sh daily-check.sh daily-digest.sh security-monitor.sh init-topics.sh task-ping.sh transcribe.sh telegram-digest-cron.sh crypto-prices.sh; do
-    cp "$SCRIPT_DIR/scripts/$script" "$OPENCLAW_HOME/scripts/$script"
+# Digest scripts + config
+for f in telegram-digest.py telegram-digest-public.py \
+         telegram-digest-cron.sh telegram-digest-public-cron.sh \
+         channels.json public-channels.json \
+         requirements.txt requirements-public.txt; do
+    cp "$SCRIPT_DIR/scripts/digest/$f" "$OPENCLAW_HOME/scripts/digest/$f"
 done
 
-# Digest support files (non-executable)
-for f in telegram-digest.py digest-channels.json requirements-digest.txt; do
-    cp "$SCRIPT_DIR/scripts/$f" "$OPENCLAW_HOME/scripts/$f"
+# Notification scripts
+for f in daily-digest.sh task-ping.sh crypto-prices.sh; do
+    cp "$SCRIPT_DIR/scripts/notify/$f" "$OPENCLAW_HOME/scripts/notify/$f"
 done
 
-echo -e "${GREEN}  ✓ Scripts copied (10 bash + 3 digest support)${NC}"
+# Maintenance scripts
+for f in backup.sh clean-logs.sh daily-check.sh security-monitor.sh; do
+    cp "$SCRIPT_DIR/scripts/maintenance/$f" "$OPENCLAW_HOME/scripts/maintenance/$f"
+done
+
+# Tool scripts
+for f in transcribe.sh init-topics.sh; do
+    cp "$SCRIPT_DIR/scripts/tools/$f" "$OPENCLAW_HOME/scripts/tools/$f"
+done
+
+echo -e "${GREEN}  ✓ Scripts copied (4 subdirectories: digest, notify, maintenance, tools)${NC}"
 
 # Digest venv hint
 echo ""
-echo -e "  ${YELLOW}Note:${NC} Channel digest requires Python + Telethon + Gemini."
+echo -e "  ${YELLOW}Note:${NC} Channel digest requires Python + dependencies."
 echo "  To set up:"
-echo "    cd $OPENCLAW_HOME/scripts"
-echo "    python3 -m venv digest-venv"
-echo "    source digest-venv/bin/activate"
-echo "    pip install -r requirements-digest.txt"
-echo "  See docs/TELEGRAM-DIGEST.md for full instructions."
+echo "    cd $OPENCLAW_HOME/scripts/digest"
+echo "    python3 -m venv venv"
+echo "    source venv/bin/activate"
+echo "    pip install -r requirements.txt          # Telethon variant"
+echo "    pip install -r requirements-public.txt   # Public variant"
+echo "  See docs/TELEGRAM-DIGEST.md and docs/TELEGRAM-DIGEST-PUBLIC.md for details."
 
 # ============================================================
 # Set permissions
@@ -256,7 +271,7 @@ fi
 echo ""
 read -rp "Initialize workspace topic structure? [Y/n] " INIT_TOPICS
 if [[ "${INIT_TOPICS,,}" != "n" ]]; then
-    bash "$OPENCLAW_HOME/scripts/init-topics.sh"
+    bash "$OPENCLAW_HOME/scripts/tools/init-topics.sh"
 fi
 
 # ============================================================

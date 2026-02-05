@@ -323,9 +323,9 @@ Archive of daily digests.
 
 ## Cron
 ```
-0 8 * * * ~/.openclaw/scripts/daily-digest.sh
-0 20 * * * ~/.openclaw/scripts/daily-digest.sh --evening
-0 10 * * 0 ~/.openclaw/scripts/daily-digest.sh --weekly
+0 8 * * * ~/.openclaw/scripts/notify/daily-digest.sh
+0 20 * * * ~/.openclaw/scripts/notify/daily-digest.sh --evening
+0 10 * * 0 ~/.openclaw/scripts/notify/daily-digest.sh --weekly
 ```
 EOF
     echo "  Created: topics/daily/README.md"

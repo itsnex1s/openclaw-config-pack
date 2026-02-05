@@ -5,9 +5,9 @@ import { join } from "path";
 import * as https from "https";
 
 const OPENCLAW_HOME = process.env.OPENCLAW_HOME || join(process.env.HOME || "", ".openclaw");
-const SCRIPT_PATH = join(OPENCLAW_HOME, "scripts", "telegram-digest.py");
-const CHANNELS_CONFIG = join(OPENCLAW_HOME, "scripts", "digest-channels.json");
-const VENV_PYTHON = join(OPENCLAW_HOME, "scripts", "digest-venv", "bin", "python3");
+const SCRIPT_PATH = join(OPENCLAW_HOME, "scripts", "digest", "telegram-digest.py");
+const CHANNELS_CONFIG = join(OPENCLAW_HOME, "scripts", "digest", "channels.json");
+const VENV_PYTHON = join(OPENCLAW_HOME, "scripts", "digest", "venv", "bin", "python3");
 const ENV_FILE = join(OPENCLAW_HOME, "credentials", ".env");
 
 const DIGEST_TOPIC_ID = process.env.DIGEST_TOPIC_ID || "121";
@@ -87,7 +87,7 @@ export default function (api: PluginApi) {
           encoding: "utf-8",
           timeout: 120_000,
           env: loadEnv(),
-          cwd: join(OPENCLAW_HOME, "scripts"),
+          cwd: join(OPENCLAW_HOME, "scripts", "digest"),
           stdio: ["pipe", "pipe", "pipe"],
         }).trim();
         sendTelegramMessage(chatId, topicId, output || "Digest complete.", messageId);

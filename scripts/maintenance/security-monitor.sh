@@ -11,8 +11,8 @@
 #   ./security-monitor.sh --test       # Test message
 #
 # Cron:
-#   */15 * * * * ~/.openclaw/scripts/security-monitor.sh
-#   0 12 * * *   ~/.openclaw/scripts/security-monitor.sh --digest
+#   */15 * * * * ~/.openclaw/scripts/maintenance/security-monitor.sh
+#   0 12 * * *   ~/.openclaw/scripts/maintenance/security-monitor.sh --digest
 
 set -e
 

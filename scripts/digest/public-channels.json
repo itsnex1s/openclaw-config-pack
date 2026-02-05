@@ -1,0 +1,9 @@
+{
+  "channels": [
+    "channel_username_1",
+    "channel_username_2"
+  ],
+  "maxMessagesPerChannel": 200,
+  "lookbackHours": 24,
+  "maxTotalTokens": 80000
+}

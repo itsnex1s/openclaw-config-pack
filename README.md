@@ -92,7 +92,7 @@ cmake --build build -j$(nproc) --config Release
 sh ./models/download-ggml-model.sh large-v3-turbo
 
 # Test
-~/.openclaw/scripts/transcribe.sh /path/to/voice.ogg en
+~/.openclaw/scripts/tools/transcribe.sh /path/to/voice.ogg en
 ```
 
 ### 7. Channel & daily digest (optional)
@@ -101,10 +101,10 @@ To enable automatic channel summaries and daily task digests, see [docs/TELEGRAM
 
 ```bash
 # Set up Python environment
-cd ~/.openclaw/scripts
-python3 -m venv digest-venv
-source digest-venv/bin/activate
-pip install -r requirements-digest.txt
+cd ~/.openclaw/scripts/digest
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
 # Add API credentials to .env
 # TELEGRAM_API_ID, TELEGRAM_API_HASH, GOOGLE_API_KEY
@@ -116,12 +116,13 @@ python3 telegram-digest.py --auth
 python3 telegram-digest.py --dry-run
 
 # Test daily task digest
-~/.openclaw/scripts/daily-digest.sh --preview
+~/.openclaw/scripts/notify/daily-digest.sh --preview
 
 # Add cron jobs
-# 30 8 * * * ~/.openclaw/scripts/telegram-digest-cron.sh
-# 0 8 * * * ~/.openclaw/scripts/daily-digest.sh
-# 0 20 * * * ~/.openclaw/scripts/daily-digest.sh --evening
+# 30 8 * * * ~/.openclaw/scripts/digest/telegram-digest-cron.sh
+# 45 8 * * * ~/.openclaw/scripts/digest/telegram-digest-public-cron.sh
+# 0 8 * * * ~/.openclaw/scripts/notify/daily-digest.sh
+# 0 20 * * * ~/.openclaw/scripts/notify/daily-digest.sh --evening
 ```
 
 ---
@@ -185,17 +186,42 @@ Plus 2 plugin-driven topics: **Channel Digest** and **Bookmarks**.
 
 ### Scripts (`scripts/`)
 
+Organized into subdirectories by function:
+
+#### `scripts/digest/` — Channel digest
+
+| Script | Purpose | Schedule |
+|--------|---------|----------|
+| `telegram-digest.py` | Channel digest: collect via Telethon, summarize via Gemini | Daily 08:30 |
+| `telegram-digest-public.py` | Public channel digest via web scraping | Daily 08:45 |
+| `telegram-digest-cron.sh` | Cron wrapper for Telethon digest | Daily 08:30 |
+| `telegram-digest-public-cron.sh` | Cron wrapper for public digest | Daily 08:45 |
+| `channels.json` | Telethon channel list config | — |
+| `public-channels.json` | Public channel list config | — |
+| `requirements.txt` | Telethon Python dependencies | — |
+| `requirements-public.txt` | Public scraping Python dependencies | — |
+
+#### `scripts/notify/` — Telegram notifications
+
+| Script | Purpose | Schedule |
+|--------|---------|----------|
+| `daily-digest.sh` | Morning/evening/weekly task digest to Telegram | 08:00 + 20:00 |
+| `task-ping.sh` | Send open tasks summary to Tasks topic | 10:00 + 18:00 |
+| `crypto-prices.sh` | Crypto & NFT prices via CoinGecko (no API key) | Daily 10:00 |
+
+#### `scripts/maintenance/` — System maintenance & security
+
 | Script | Purpose | Schedule |
 |--------|---------|----------|
 | `backup.sh` | GPG AES-256 encrypted backups, 30-day rotation | Sunday 03:00 |
 | `clean-logs.sh` | Log rotation + secret leak detection | Daily 03:00 |
 | `daily-check.sh` | Container health, security audit, resources | Daily |
-| `daily-digest.sh` | Morning/evening/weekly task digest to Telegram | 08:00 + 20:00 |
 | `security-monitor.sh` | Log monitoring, critical alerts to Telegram | Every 15 min |
-| `task-ping.sh` | Send open tasks summary to Tasks topic | 10:00 + 18:00 |
-| `crypto-prices.sh` | Crypto & NFT prices via CoinGecko (no API key) | Daily 10:00 |
-| `telegram-digest.py` | Channel digest: collect, summarize via Gemini, send | Daily 08:30 |
-| `telegram-digest-cron.sh` | Cron wrapper for channel digest | Daily 08:30 |
+
+#### `scripts/tools/` — Standalone utilities
+
+| Script | Purpose | Schedule |
+|--------|---------|----------|
 | `transcribe.sh` | whisper.cpp wrapper for voice transcription | On demand |
 | `init-topics.sh` | Initialize workspace directory structure | Once |
 
@@ -219,6 +245,7 @@ Example plugins (TypeScript):
 | `docs/SECURITY_GUIDE.md` | Comprehensive security guide for OpenClaw deployment |
 | `docs/VOICE-TRANSCRIPTION.md` | Voice transcription setup guide (whisper.cpp) |
 | `docs/TELEGRAM-DIGEST.md` | Channel digest + daily task digest setup guide |
+| `docs/TELEGRAM-DIGEST-PUBLIC.md` | Public channel digest setup guide (no auth) |
 | `docs/PLUGIN-DEVELOPMENT.md` | Plugin development guide with templates |
 | `docs/skills/` | Skill documentation and inter-skill data flow |
 
